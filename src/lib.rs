@@ -24,7 +24,8 @@ use tags::Tags;
 /// ### Code
 /// 
 /// ```rust
-/// # use enumrs::Tagged;
+/// use enumrs::Tagged;
+/// 
 /// #[derive(Tagged)]
 /// pub enum Country {
 /// 

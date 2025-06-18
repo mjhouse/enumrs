@@ -40,20 +40,25 @@ pub enum Country {
 Access the associated data using the generated functions:
 
 ```rust
-# enum Country
-# {
-#   AFG   
-# }
-# impl Country {
-#   pub fn name(&self) -> Option<&'static str> {
-#       Some("Afghanistan")
-#   }
-# }
-# fn main() {
+use enumrs::Tagged;
+
+#[derive(Tagged)]
+pub enum Country {
+
+    #[tag(name, "Afghanistan")]
+    #[tag(description, "Description of Afghanistan")]
+	AFG = 1,
+
+    #[tag(name, "Albania")]
+    #[tag(description, "Description of Albania")]
+	ALB = 2,
+
+    // ...
+}
+
 let variant = Country::AFG;
 let name = variant.name();
 assert_eq!(name,Some("Afghanistan"));
-# }
 ```
 
 ## Detailed usage
@@ -62,65 +67,67 @@ In a `tag` declaration, the first value must be a plain identifier without quota
 
 ### Examples
 ```rust
-# use enumrs::Tagged;
-# #[derive(Tagged)]
-# pub enum MyEnum {
-// RIGHT: return type will be `&'static str`
-#[tag( name, "Name" )]
-Variant1,
-# }
+use enumrs::Tagged;
+
+#[derive(Tagged)]
+pub enum MyEnum {
+    // RIGHT: return type will be `&'static str`
+    #[tag( name, "Name" )]
+    Variant1,
+}
 ```
 
 ```rust
-# use enumrs::Tagged;
-# #[derive(Tagged)]
-# pub enum MyEnum {
-// RIGHT: return type will be f64
-#[tag( offset, 0.45 )]
-Variant2,
-# }
+use enumrs::Tagged;
+
+#[derive(Tagged)]
+pub enum MyEnum {
+    // RIGHT: return type will be f64
+    #[tag( offset, 0.45 )]
+    Variant2,
+}
 ```
 
 ```rust
-# use enumrs::Tagged;
-# #[derive(Tagged)]
-# pub enum MyEnum {
-// RIGHT: can use other attributes in expressions
-#[tag( width, 5 )]
-#[tag( padding, 1 )]
-#[tag( total_width, width + (padding * 2) )]
-Variant3,
-# }
+use enumrs::Tagged;
+#[derive(Tagged)]
+pub enum MyEnum {
+    // RIGHT: can use other attributes in expressions
+    #[tag( width, 5 )]
+    #[tag( padding, 1 )]
+    #[tag( total_width, width + (padding * 2) )]
+    Variant3,
+}
 ```
 
 ```compile_fail
-# use enumrs::Tagged;
-# #[derive(Tagged)]
-# pub enum MyEnum {
-// WRONG: can't evaluate because 'String' is not in scope at compile time.
-#[tag( name, String::from("Name") )]
-Variant4,
-# }
+use enumrs::Tagged;
+#[derive(Tagged)]
+pub enum MyEnum {
+    // WRONG: can't evaluate because 'String' is not in scope at compile time.
+    #[tag( name, String::from("Name") )]
+    Variant4,
+}
 ```
 
 ```compile_fail
-# use enumrs::Tagged;
-# #[derive(Tagged)]
-# pub enum MyEnum {
-// WRONG: can't evaluate because 'my_custom_func' is not in scope at compile time.
-#[tag( name, my_custom_func() )]
-Variant5,
-# }
+use enumrs::Tagged;
+#[derive(Tagged)]
+pub enum MyEnum {
+    // WRONG: can't evaluate because 'my_custom_func' is not in scope at compile time.
+    #[tag( name, my_custom_func() )]
+    Variant5,
+}
 ```
 
 ```compile_fail
-# use enumrs::Tagged;
-# #[derive(Tagged)]
-# pub enum MyEnum {
-// WRONG: no other attribute with name 'other_attribute' defined.
-#[tag( name, other_attribute + 3 )]
-Variant6,
-# }
+use enumrs::Tagged;
+#[derive(Tagged)]
+pub enum MyEnum {
+    // WRONG: no other attribute with name 'other_attribute' defined.
+    #[tag( name, other_attribute + 3 )]
+    Variant6,
+}
 ```
 
 ### Types
@@ -141,19 +148,20 @@ The expressions in the `tag` attributes can use any of the operators available f
 So this works:
 
 ```rust
-# use enumrs::Tagged;
-# #[derive(Tagged)]
-# pub enum MyEnum {
-#[tag( id, 3 )]
-#[tag( index, id - 1 )]
-Variant,
-# }
+use enumrs::Tagged;
+#[derive(Tagged)]
+pub enum MyEnum {
+    #[tag( id, 3 )]
+    #[tag( index, id - 1 )]
+    Variant,
+}
 ```
 
 But this does not:
 
 ```compile_fail
-# use enumrs::Tagged;
+use enumrs::Tagged;
+
 pub const VALUE: i32 = 3;
 
 #[derive(Tagged)]
@@ -220,7 +228,9 @@ impl MyEnum {
 In some of the examples above, you see that things like function calls are not supported. I'd like to change this by providing some way to escape the compile-time evaluation of the expression and insert it directly into the generated code. This would allow us to reference functions in the tags and call those functions at runtime.
 
 This code:
-```compile_file
+```compile_fail
+use enumrs::Tagged;
+
 pub fn myfunc() -> i32 {
     0
 }
@@ -238,7 +248,8 @@ pub enum MyEnum {
 
 Should generate something like:
 ```rust
-# use enumrs::Tagged;
+use enumrs::Tagged;
+
 pub fn myfunc() -> i32 {
     0
 }
