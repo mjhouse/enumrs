@@ -31,10 +31,11 @@ impl Tag
     pub fn evaluate(&mut self, context: &HashMapContext<DefaultNumericTypes>) -> Option<Value>
     {
         if self.value.is_none() {
-            self.value = eval_with_context(
+            let result = eval_with_context(
                 self.expression.as_str(), 
                 context
-            ).ok();
+            );
+            self.value = result.ok();
         }
         self.value.clone()
     }
