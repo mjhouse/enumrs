@@ -1,0 +1,21 @@
+[package]
+name = "enumrs"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-only"
+description = "A derive for adding arbitrary values to enums"
+homepage = "https://github.com/mjhouse/enumrs"
+repository = "https://github.com/mjhouse/enumrs"
+readme = "README.md"
+keywords = [ "enum", "derive", "attributes" ]
+categories = [  ]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2.0.103", features = ["full"]}
+quote = "1.0"
+proc-macro-error = "1.0.4"
+proc-macro2 = "1.0.79"
+evalexpr = "12.0.2"
