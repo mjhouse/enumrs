@@ -1,13 +1,13 @@
 [package]
 name = "enumrs"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 license = "GPL-3.0-only"
 description = "A derive for adding arbitrary values to enums"
 homepage = "https://github.com/mjhouse/enumrs"
 repository = "https://github.com/mjhouse/enumrs"
 readme = "README.md"
-keywords = [ "enum", "derive", "attributes" ]
+keywords = [ "enum", "derive", "associate" ]
 categories = [  ]
 
 [lib]

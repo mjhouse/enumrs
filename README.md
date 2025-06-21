@@ -14,7 +14,7 @@ Or by updating your Cargo.toml:
 
 ```toml
 [dependencies]
-enumrs = "0.2.0"
+enumrs = "0.2.1"
 ```
 
 Derive the `Tagged` macro for your enum, and associate data with the `tag` attribute:
@@ -66,34 +66,40 @@ assert_eq!(name,Some("Afghanistan"));
 In a `tag` declaration, the first value must be a plain identifier without quotations. This is the tag name, and it's required. Everything that comes after the name is executed as an expression. Expressions must be relatively simple mathematical expressions or bare values.
 
 ### Examples
+
+#### Right
+
+Return type for `name()` will be `&'static str`:
+
 ```rust
 use enumrs::Tagged;
 
 #[derive(Tagged)]
 pub enum MyEnum {
-    // RIGHT: return type will be `&'static str`
     #[tag( name, "Name" )]
     Variant1,
 }
 ```
 
+Return type for `offset()` will be f64:
+
 ```rust
 use enumrs::Tagged;
 
 #[derive(Tagged)]
 pub enum MyEnum {
-    // RIGHT: return type will be f64
     #[tag( offset, 0.45 )]
     Variant2,
 }
 ```
 
+The `total_width()` will return 7:
+
 ```rust
 use enumrs::Tagged;
 
 #[derive(Tagged)]
 pub enum MyEnum {
-    // RIGHT: can use other attributes in expressions
     #[tag( width, 5 )]
     #[tag( padding, 1 )]
     #[tag( total_width, width + (padding * 2) )]
@@ -101,34 +107,39 @@ pub enum MyEnum {
 }
 ```
 
+#### Wrong
+
+Can't evaluate because 'String' is not in scope at compile time:
+
 ```compile_fail
 use enumrs::Tagged;
 
 #[derive(Tagged)]
 pub enum MyEnum {
-    // WRONG: can't evaluate because 'String' is not in scope at compile time.
     #[tag( name, String::from("Name") )]
     Variant4,
 }
 ```
 
+Can't evaluate because 'my_custom_func' is not in scope at compile time:
+
 ```compile_fail
 use enumrs::Tagged;
 
 #[derive(Tagged)]
 pub enum MyEnum {
-    // WRONG: can't evaluate because 'my_custom_func' is not in scope at compile time.
     #[tag( name, my_custom_func() )]
     Variant5,
 }
 ```
 
+No tag with the name 'other' is defined:
+
 ```compile_fail
 use enumrs::Tagged;
 
 #[derive(Tagged)]
 pub enum MyEnum {
-    // WRONG: no tag with the name 'other' is defined.
     // #[tag(other, 1)]
     #[tag( name, other + 3 )]
     Variant6,
@@ -181,15 +192,3 @@ pub enum MyEnum {
 # Contributing
 
 Anyone is welcome to contribute. It's a small crate, so your contributions are likely to have a large impact on the future of this library. I'll review and discuss any pull requests, but there may be a bit of a delay. Don't hesitate to ping me over and over for a review until I respond.
-
-# Future
-
-## Overview
-
-The future development of this crate should tend toward simplicity and robustness. If possible, there should be only a few attributes to remember, and using those attributes should be a simple and intuitive process. This might not always be possible, as there are likely going to be edge cases (like providing names for generated functions) that require additional attributes, but simple and robust is the goal.
-
-## Features
-
-### Add configuration attributes
-
-Currently, `Tagged` generates a function for each tag name, and this might not always be what we want. There should be a way to specify particular function names to use instead of the defaults. So a tag named 'id' could be configured to generate a function called (for example) 'get_id()' instead of the default 'id()'.

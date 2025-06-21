@@ -201,6 +201,79 @@ fn get_tags(variant: &syn::Variant) -> Vec<Tag> {
     tags
 }
 
+/// Derive macro to associate data with enum variants
+/// 
+/// This macro provides the `tag` attribute that associates data with enum variants,
+/// and generates functions to access the tag values. Each generated function returns
+/// an `Option<T>` where `T` is `f64`, `i64`, `&'static str`, or `bool`. The expressions
+/// included in each tag are evaluated at compile time.
+/// 
+/// ## Examples
+/// 
+/// ### Code
+/// 
+/// ```rust
+/// use enumrs::Tagged;
+/// 
+/// #[derive(Tagged)]
+/// pub enum Country {
+/// 
+///     #[tag(id, 1)]
+///     #[tag(index, id - 1)]
+///     #[tag(name, "Afghanistan")]
+///     #[tag(description, "Description of Afghanistan")]
+/// 	AFG = 1,
+/// 
+///     #[tag(id, 2)]
+///     #[tag(index, id - 1)]
+///     #[tag(name, "Albania")]
+///     #[tag(description, "Description of Albania")]
+/// 	ALB = 2,
+/// 
+///     // ...
+/// }
+/// ```
+/// 
+/// ### Expanded
+/// 
+/// ```rust
+/// pub enum Country {
+/// 	AFG = 1,
+/// 	ALB = 2,
+///     // ...
+/// }
+/// 
+/// impl Country {
+///     pub fn id(&self) -> Option<i32> {
+///         match self {
+///             Self::AFG => Some(1),
+///             Self::ALB => Some(2),
+///             _ => None
+///         }
+///     }
+///     pub fn index(&self) -> Option<i32> {
+///         match self {
+///             Self::AFG => Some(0),
+///             Self::ALB => Some(1),
+///             _ => None
+///         }
+///     }
+///     pub fn name(&self) -> Option<&'static str> {
+///         match self {
+///             Self::AFG => Some("Afghanistan"),
+///             Self::ALB => Some("Albania"),
+///             _ => None
+///         }
+///     }
+///     pub fn description(&self) -> Option<&'static str> {
+///         match self {
+///             Self::AFG => Some("Description of Afghanistan"),
+///             Self::ALB => Some("Description of Albania"),
+///             _ => None
+///         }
+///     }
+/// }
+/// ```
 #[proc_macro_derive(Tagged, attributes(tag))]
 #[proc_macro_error::proc_macro_error]
 pub fn tagged_derive(input: TokenStream) -> TokenStream {
