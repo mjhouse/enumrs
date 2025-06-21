@@ -1,0 +1,5 @@
+error: Mismatched expression value: expected 'bool', found 'f64'
+  --> tests/compiled/test_mismatched_types.rs:13:5
+   |
+13 |     #[tag(tagname, 3.5)]
+   |     ^

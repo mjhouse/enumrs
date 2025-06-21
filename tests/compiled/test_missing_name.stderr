@@ -1,0 +1,5 @@
+error: No name for tag
+ --> tests/compiled/test_missing_name.rs:8:5
+  |
+8 |     #[tag()]
+  |     ^

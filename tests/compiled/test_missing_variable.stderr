@@ -1,0 +1,5 @@
+error: Could not evaluate: Variable identifier is not bound to anything by context: "other".
+ --> tests/compiled/test_missing_variable.rs:9:5
+  |
+9 |     #[tag(value, other + 7)]
+  |     ^

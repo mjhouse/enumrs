@@ -1,0 +1,5 @@
+error: Duplicate tag: 'tagname'
+ --> tests/compiled/test_duplicate_tags.rs:8:5
+  |
+8 |     #[tag(tagname)]
+  |     ^

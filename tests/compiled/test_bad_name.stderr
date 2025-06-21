@@ -1,0 +1,5 @@
+error: Invalid tag name: '1padding'
+ --> tests/compiled/test_bad_name.rs:8:11
+  |
+8 |     #[tag(1padding)]
+  |           ^^^^^^^^

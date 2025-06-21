@@ -1,0 +1,5 @@
+error: Malformed tag: 'tagname 10'
+ --> tests/compiled/test_malformed_tag.rs:7:11
+  |
+7 |     #[tag(tagname 10)]
+  |           ^^^^^^^

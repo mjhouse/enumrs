@@ -14,7 +14,7 @@ Or by updating your Cargo.toml:
 
 ```toml
 [dependencies]
-enumrs = "0.1.0"
+enumrs = "0.2.0"
 ```
 
 Derive the `Tagged` macro for your enum, and associate data with the `tag` attribute:
@@ -90,6 +90,7 @@ pub enum MyEnum {
 
 ```rust
 use enumrs::Tagged;
+
 #[derive(Tagged)]
 pub enum MyEnum {
     // RIGHT: can use other attributes in expressions
@@ -102,6 +103,7 @@ pub enum MyEnum {
 
 ```compile_fail
 use enumrs::Tagged;
+
 #[derive(Tagged)]
 pub enum MyEnum {
     // WRONG: can't evaluate because 'String' is not in scope at compile time.
@@ -112,6 +114,7 @@ pub enum MyEnum {
 
 ```compile_fail
 use enumrs::Tagged;
+
 #[derive(Tagged)]
 pub enum MyEnum {
     // WRONG: can't evaluate because 'my_custom_func' is not in scope at compile time.
@@ -122,10 +125,12 @@ pub enum MyEnum {
 
 ```compile_fail
 use enumrs::Tagged;
+
 #[derive(Tagged)]
 pub enum MyEnum {
-    // WRONG: no other attribute with name 'other_attribute' defined.
-    #[tag( name, other_attribute + 3 )]
+    // WRONG: no tag with the name 'other' is defined.
+    // #[tag(other, 1)]
+    #[tag( name, other + 3 )]
     Variant6,
 }
 ```
@@ -137,7 +142,7 @@ The result of the expression must be one of the following simple types, and will
 | Simple type | Rust type    | Return type            |
 | --          | --           | --                     |
 | Float       | f64          | `Option<f64>`          |
-| Integer     | i32          | `Option<i32>`          |
+| Integer     | i64          | `Option<i64>`          |
 | String      | &'static str | `Option<&'static str>` |
 | Boolean     | bool         | `Option<bool>`         | 
 
@@ -149,6 +154,7 @@ So this works:
 
 ```rust
 use enumrs::Tagged;
+
 #[derive(Tagged)]
 pub enum MyEnum {
     #[tag( id, 3 )]
@@ -186,94 +192,4 @@ The future development of this crate should tend toward simplicity and robustnes
 
 ### Add configuration attributes
 
-Currently, `Tagged` generates a function for each tag name, and this might not always be what we want. There should be a way to specify particular function names to use for different attributes, something like:
-
-```compile_fail
-# use enumrs::Tagged;
-#[derive(Tagged)]
-#[map(id,get_id)]
-pub enum MyEnum {
-
-    #[tag(id, 0)]
-    Variant1,
-
-    #[tag(id, 1)]
-    Variant2
-
-}
-```
-
-Should generate something like:
-
-```rust
-pub enum MyEnum {
-    Variant1,
-    Variant2
-}
-
-impl MyEnum {
-    // `get_id()` instead of `id()`
-    pub fn get_id(&self) -> Option<i32> {
-        match self {
-            Self::Variant1 => Some(0),
-            Self::Variant2 => Some(1),
-        }
-    }
-}
-```
-
-
-### Handle more complex expressions
-
-In some of the examples above, you see that things like function calls are not supported. I'd like to change this by providing some way to escape the compile-time evaluation of the expression and insert it directly into the generated code. This would allow us to reference functions in the tags and call those functions at runtime.
-
-This code:
-```compile_fail
-use enumrs::Tagged;
-
-pub fn myfunc() -> i32 {
-    0
-}
-
-#[derive(Tagged)]
-pub enum MyEnum {
-    #[tag( id, myfunc() + 1 )]
-    Variant1,
-
-    // no tag on this one
-    Variant2
-    // ...
-}
-```
-
-Should generate something like:
-```rust
-use enumrs::Tagged;
-
-pub fn myfunc() -> i32 {
-    0
-}
-
-pub enum MyEnum {
-    Variant1,
-    Variant2
-    // ...
-}
-
-impl MyEnum {
-    pub fn id(&self) -> Option<i32> {
-        match self {
-            Self::Variant1 => Some(myfunc() + 1),
-            _ => None
-        }
-    }
-}
-```
-
-### Improve code quality
-
-Right now, testing is a little barebones, and I'd like to spend some time writing some unit tests to check edge cases and particular types of failures. I'm also relatively new to proc-macro crates, and I need to find someone to give me a code review.
-
-### Improve error reporting
-
-If an expression couldn't be evaluated, two tags have different evaluated data types, or some other failure occurs, I'd like better output at compile time to make debugging easier. Currently, compilation will panic with a simple error message, but there isn't a lot of detail.
+Currently, `Tagged` generates a function for each tag name, and this might not always be what we want. There should be a way to specify particular function names to use instead of the defaults. So a tag named 'id' could be configured to generate a function called (for example) 'get_id()' instead of the default 'id()'.
