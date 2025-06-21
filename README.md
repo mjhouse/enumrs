@@ -69,7 +69,7 @@ In a `tag` declaration, the first value must be a plain identifier without quota
 
 #### Right
 
-Return type for `name()` will be `&'static str`:
+Return type for `name()` will be `Option<&'static str>`, and it will return `Some("Name")`:
 
 ```rust
 use enumrs::Tagged;
@@ -81,7 +81,7 @@ pub enum MyEnum {
 }
 ```
 
-Return type for `offset()` will be f64:
+Return type for `offset()` will be `Option<f64>` and it will return `Some(0.45)`:
 
 ```rust
 use enumrs::Tagged;
@@ -93,7 +93,7 @@ pub enum MyEnum {
 }
 ```
 
-The `total_width()` will return 7:
+The return type for `total_width()` will be `Option<i64>` and it will return `Some(7)`:
 
 ```rust
 use enumrs::Tagged;
@@ -179,7 +179,7 @@ But this does not:
 ```compile_fail
 use enumrs::Tagged;
 
-pub const VALUE: i32 = 3;
+pub const VALUE: i64 = 3;
 
 #[derive(Tagged)]
 pub enum MyEnum {
